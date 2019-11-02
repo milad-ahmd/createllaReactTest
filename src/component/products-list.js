@@ -42,6 +42,18 @@ class Products extends Component {
         this.getIntialProduct(page, limit, filter)
     }
 
+    componentDidMount() {
+        this.refs.iScroll.addEventListener("scroll", async () => {
+            if (
+                this.refs.iScroll.scrollTop + this.refs.iScroll.clientHeight >=
+                this.refs.iScroll.scrollHeight
+            ) {
+                await this.changeLoading(true)
+                this.loadItems(this.state.page + 1);
+            }
+        });
+    }
+
     async getIntialProduct(page, limit, filter) {
         await this.changeLoading(true)
 
@@ -123,11 +135,9 @@ class Products extends Component {
                     </Col>
                 </Row>
                 <Row>
-                    <InfiniteScroll
-                        pageStart={9}
-                        loadMore={this.loadItems.bind(this)}
-                        hasMore={true || false}
-                        loader={<div className="loader" key={0}>Loading ...</div>}
+                    <div
+                        ref="iScroll"
+                        style={{ height: "700px", overflow: "auto" }}
                     >
                         {this.state.productList.map((item, index) => {
                             return (
@@ -137,8 +147,8 @@ class Products extends Component {
                                             <Icon type="wallet" />
                                             <span style={{ marginLeft: 10 }}>Price : </span>
                                             <span className='under-line' ><span className='icons'>$</span>
-                                            {item.price}
-                                                
+                                                {item.price}
+
                                             </span></p>
                                         <p className='position-relative'>
                                             <Icon type="calendar" />
@@ -152,7 +162,7 @@ class Products extends Component {
 
                             )
                         })}
-                    </InfiniteScroll>
+                    </div>
                     {this.renderLoading(this.state.loading)}
                 </Row>
             </div>
@@ -162,6 +172,7 @@ class Products extends Component {
         if (loading) {
             return (
                 <div>
+                    <div className="loader" key={0}>Loading ...</div>
                     <Col span={6} className="each-card">
                         <CardLoader />
                     </Col>
