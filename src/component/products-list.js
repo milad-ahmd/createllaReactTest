@@ -32,14 +32,15 @@ class Products extends Component {
         this.state = {
             productList: [],
             filter: 'price',
-            page: 9,
-            limit: 15,
+            page: 0,
+            limit: 500,
             loading: false
         }
     }
     async componentWillMount() {
         const { page, limit, filter } = this.state
-        this.getIntialProduct(page, limit, filter)
+        await this.changeLoading(true)
+        this.getProduct(page, limit, filter)
     }
 
     componentDidMount() {
@@ -52,22 +53,6 @@ class Products extends Component {
                 this.loadItems(this.state.page + 1);
             }
         });
-    }
-
-    async getIntialProduct(page, limit, filter) {
-        await this.changeLoading(true)
-
-        axios.get(`http://localhost:3000/products?_page=${page}&_limit=${limit}&_sort=${filter}`).then(async res => {
-            console.log(this.state.loading);
-
-            await this.setState({
-                loading: false,
-                page: this.page + 1,
-                productList: this.state.productList.concat(res.data)
-            })
-        }).catch(err => {
-
-        })
     }
 
     async changeLoading(loading) {
@@ -90,7 +75,8 @@ class Products extends Component {
         const { limit, filter } = this.state
         this.getProduct(event, limit, filter)
     }
-    onClick = async ({ key }) => {
+
+    onClickToSort = async ({ key }) => {
         await this.setState({
             filter: key,
             page: 9,
@@ -100,10 +86,25 @@ class Products extends Component {
         this.getIntialProduct(page, limit, filter)
     };
 
+    compareDateWithToday(dateTimestamp) {
+        let nowTimestamp = new Date().getTime();
+        if ((nowTimestamp - (7 * 24 * 60 * 60 * 1000)) > dateTimestamp) {
+            let date = new Date(dateTimestamp)
+            return date.toUTCString()
+        } else {
+            return parseInt((nowTimestamp - dateTimestamp) / (24 * 60 * 60 * 1000)) + 1 + ' days ago'
+        }
+    }
+
+    changeDateFormat(date) {
+        let dateTimestamp = new Date(date).getTime();
+        return this.compareDateWithToday(dateTimestamp);
+    }
+
     render() {
 
         const menu = (
-            <Menu onClick={this.onClick}>
+            <Menu onClick={this.onClickToSort}>
                 {filterData.map((item, index) => {
                     return (
                         <Menu.Item key={item.value}>
@@ -154,7 +155,7 @@ class Products extends Component {
                                             <Icon type="calendar" />
                                             <span style={{ marginLeft: 10 }}>Date : </span>
 
-                                            <span> 2 days age</span></p>
+                                            <span>{this.changeDateFormat(item.date)}</span></p>
                                         <div>
                                         </div>
                                     </Card>
@@ -162,8 +163,9 @@ class Products extends Component {
 
                             )
                         })}
+                        {this.renderLoading(this.state.loading)}
+
                     </div>
-                    {this.renderLoading(this.state.loading)}
                 </Row>
             </div>
         )
