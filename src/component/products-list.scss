@@ -1,0 +1,52 @@
+.wrap{
+  padding: 15px;
+  .Row{
+    display: flex;
+    width: 100%;
+  }
+  .each-card{
+    padding: 7px;
+  }
+
+  .ant-card-head-wrapper {
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ant-card-body{
+    text-align: left;
+  }
+
+  .ant-card-head{
+    background: #dededec7;
+    min-height: 100px;
+    max-height: fit-content;
+    display: flex;
+  }
+
+  .add-to-cart{
+    color: red;
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .position-relative{
+    position: relative;
+  }
+
+  .under-line{
+    position: relative;
+    font-size: 26px;
+    &:before{
+      content: '';
+      width: 100%;
+      border: 1px solid rebeccapurple;
+      position: absolute;
+      bottom: -2px;
+    }
+
+    .icons{
+      font-size: 18px;
+    }
+  }
+}
