@@ -53,6 +53,8 @@ class Products extends Component {
             if (
                 this.refs.iScroll.scrollTop + this.refs.iScroll.clientHeight >=
                 this.refs.iScroll.scrollHeight
+                &&
+                this.state.hasMore
             ) {
                 await this.changeLoading(true)
                 this.loadItems(this.state.page + 1);
