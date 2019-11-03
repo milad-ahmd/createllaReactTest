@@ -1,4 +1,5 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was test project.
+
 
 ## Available Scripts
 
@@ -15,5 +16,3 @@ Runs backend in the development mode
 ### `npm run start-front`
 
 Runs the app in the development mode.<br />
-
-
