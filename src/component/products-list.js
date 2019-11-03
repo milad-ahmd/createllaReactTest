@@ -37,7 +37,7 @@ class Products extends Component {
             page: 10,
             limit: 15,
             loading: false,
-            hasMore:true
+            hasMore: true
         }
     }
     //get fires page of products on mounting screen
@@ -84,7 +84,7 @@ class Products extends Component {
         }).catch(err => {
             this.setState({
                 loading: false,
-                hasMore:false
+                hasMore: false
             })
         })
     }
@@ -131,6 +131,27 @@ class Products extends Component {
         return this.compareDateWithToday(dateTimestamp);
     }
 
+    renderRowAd() {
+        let randomNumber = Math.floor(Math.random() * 1000)
+        let url = 'http://localhost:3000/ads/?r='
+        return (
+            <div>
+                <Col span={6} className="each-card">
+                    <img className="ad" src={url + `${randomNumber}`} />
+                </Col>
+                <Col span={6} className="each-card">
+                    <img className="ad" src={url + `${randomNumber + 1}`} />
+                </Col>
+                <Col span={6} className="each-card">
+                    <img className="ad" src={url + `${randomNumber + 2}`} />
+                </Col>
+                <Col span={6} className="each-card">
+                    <img className="ad" src={url + `${randomNumber + 3}`} />
+                </Col>
+            </div>
+        )
+    }
+
     render() {
         //dropdown menu of changing sort filter of products
         const menu = (
@@ -171,6 +192,9 @@ class Products extends Component {
                         style={{ height: "700px", overflow: "auto" }}
                     >
                         {this.state.productList.map((item, index) => {
+                            if ((index + 1) % 21 === 0) {
+                                return this.renderRowAd()
+                            }
                             return (
                                 <Col key={index} span={6} className="each-card">
                                     <Card size="small" headStyle={{ fontSize: item.size }} title={item.face} extra={<Icon type="shopping-cart" className="add-to-cart" />} style={{ width: '100%' }}>
@@ -192,9 +216,11 @@ class Products extends Component {
                                 </Col>
 
                             )
+
+
                         })}
                         {this.renderLoading(this.state.loading)}
-                        {!this.state.hasMore?<div>no more cataloges...</div>:null}
+                        {!this.state.hasMore ? <div>no more cataloges...</div> : null}
 
                     </div>
                 </Row>
