@@ -1,16 +1,17 @@
 import React, { Component } from "react";
-import { Row, Col, Card, Menu, Dropdown, Icon, Button, PageHeader, Input } from 'antd';
+import { Row, Col, Card, Menu, Dropdown, Icon, Button, PageHeader } from 'antd';
 import './products-list.scss';
 import ContentLoader from "react-content-loader"
 import axios from "axios"
-import InfiniteScroll from 'react-infinite-scroller';
 
+//array of data that you can add to this list for more filter for sorting data
 const filterData = [
     { title: 'size', value: 'size' },
     { title: 'price', value: 'price' },
     { title: 'id', value: 'id' },
 ]
 
+// component for pre-loader card at starter of loading page and load more data on scroll
 const CardLoader = () => (
     <ContentLoader
         height={400}
@@ -25,6 +26,7 @@ const CardLoader = () => (
         <rect x="0" y="170" rx="0" ry="0" width="545" height="30" />
     </ContentLoader>
 )
+
 class Products extends Component {
 
     constructor(props) {
@@ -32,17 +34,20 @@ class Products extends Component {
         this.state = {
             productList: [],
             filter: 'price',
-            page: 0,
-            limit: 500,
-            loading: false
+            page: 10,
+            limit: 15,
+            loading: false,
+            hasMore:true
         }
     }
+    //get fires page of products on mounting screen
     async componentWillMount() {
         const { page, limit, filter } = this.state
         await this.changeLoading(true)
         this.getProduct(page, limit, filter)
     }
 
+    //add listener for changing on scroll to end and load more data if exist
     componentDidMount() {
         this.refs.iScroll.addEventListener("scroll", async () => {
             if (
@@ -55,11 +60,18 @@ class Products extends Component {
         });
     }
 
+    /*
+    this function just changing loading value on state
+    */
     async changeLoading(loading) {
         return await this.setState({
             loading: loading
         })
     }
+
+    /*
+    get product with page,limit,filter parameters
+    */
     async getProduct(page, limit, filter) {
         axios.get(`http://localhost:3000/products?_page=${page}&_limit=${limit}&_sort=${filter}`).then(async res => {
             await this.setState({
@@ -68,14 +80,24 @@ class Products extends Component {
                 productList: this.state.productList.concat(res.data)
             })
         }).catch(err => {
-
+            this.setState({
+                loading: false,
+                hasMore:false
+            })
         })
     }
+
+    /*
+    calling on end scroll listener
+    */
     loadItems(event) {
         const { limit, filter } = this.state
         this.getProduct(event, limit, filter)
     }
 
+    /*
+    change sort on select filter and reload data
+    */
     onClickToSort = async ({ key }) => {
         await this.setState({
             filter: key,
@@ -83,9 +105,12 @@ class Products extends Component {
             productList: []
         });
         const { page, limit, filter } = this.state
-        this.getIntialProduct(page, limit, filter)
+        this.getProduct(page, limit, filter)
     };
 
+    /*
+    compare product's date with this week for showing date to user
+    */
     compareDateWithToday(dateTimestamp) {
         let nowTimestamp = new Date().getTime();
         if ((nowTimestamp - (7 * 24 * 60 * 60 * 1000)) > dateTimestamp) {
@@ -96,13 +121,16 @@ class Products extends Component {
         }
     }
 
+    /*
+    function for calculate date conditions
+    */
     changeDateFormat(date) {
         let dateTimestamp = new Date(date).getTime();
         return this.compareDateWithToday(dateTimestamp);
     }
 
     render() {
-
+        //dropdown menu of changing sort filter of products
         const menu = (
             <Menu onClick={this.onClickToSort}>
                 {filterData.map((item, index) => {
@@ -164,12 +192,14 @@ class Products extends Component {
                             )
                         })}
                         {this.renderLoading(this.state.loading)}
+                        {!this.state.hasMore?<div>no more cataloges...</div>:null}
 
                     </div>
                 </Row>
             </div>
         )
     }
+
     renderLoading(loading) {
         if (loading) {
             return (
