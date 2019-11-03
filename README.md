@@ -9,10 +9,8 @@ In the project directory, you can run:
 
 For install dependecies of the project
 
-### `npm start`
+### Run `npm start`
 
-Runs backend in the development mode
+First you should Run backend in the development mode with execute this command => `npm start`
 
-### `npm run start-front`
-
-Runs the app in the development mode.<br />
+your front page is on http://localhost:3001
